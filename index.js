@@ -6,31 +6,33 @@ const app = express();
 const routers = require("./src/routers/routers");
 // const routers = require("./src/routers/routers2");
 // const authMiddleware = require("./src/middleware/authmiddleware")
-const notFound = require("./src/middleware/404")
-const errorHanding = require("./src/middleware/errorHanding")
+const notFound = require("./src/middleware/404");
+const errorHanding = require("./src/middleware/errorHanding");
 const bodyParser = require("body-parser");
 const e = require("express");
- require("dotenv").config();
-const port = process.env.PORT || 8087;
-const authMiddleware = require('./src/middleware/authmiddleware')
+require("dotenv").config();
+const { sequelize } = require("./src/models");
+const port = process.env.PORT || 8082;
+const authMiddleware = require("./src/middleware/authmiddleware");
 const console1 = require("./src/middleware/console1");
 const console2 = require("./src/middleware/console2");
+const paginationMiddleware = require("./src/middleware/paginationmiddleware");
+
+
+
 // app.use(authMiddleware);
-
-app.use(express.json())
-app.use(express.static("./src/storage/upload"))
-
+app.use(express.json());
+app.use(express.static("./src/storage/upload"));
 
 app.use(console2);
 app.use(console1);
+app.use(paginationMiddleware)
 app.use(routers);
 // app.use(routers2);
 app.use(notFound);
 app.use(errorHanding);
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 // const { smk, cekBilangan } = require("./example");
-
-
 
 // const port2 = 8080;
 // const hostName = "127.0.0.1";
@@ -77,6 +79,12 @@ app.use(bodyParser.json())
 // //     console.log("Server berjalan di http://localhost:8087")
 // // })
 
-app.listen(port, () =>
-  console.log(`Server berjalan di http://localhost:${port}`)
-);
+app.listen(port, async () => {
+  try {
+    await sequelize.authenticate();
+    console.log(`Server berjalan di http://localhost:${port}`);
+    console.log("Connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+});
