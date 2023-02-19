@@ -1,5 +1,6 @@
 const ArtikelModel = require("../models").artikels;
 const { Op } = require("sequelize");
+const {checkQuery} = require("../utils");
 // async function getArtikel(req, res) {
 //   try {
 //     const artikels = await ArtikelModel.findAll({
@@ -93,33 +94,40 @@ async function getArtikel(req, res) {
       pageSize,
       sortBuy = "id",
       orderBuy = "desc",
+      isAll
     } = req.query;
     
     const artikels = await ArtikelModel.findAndCountAll({
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },
-
-      // where: {
-      //   [Op.or]: [
-      //     {
-      //       tittle: {
-      //         [Op.substring]: keyword,
-      //       },
-      //     },
-      //     {
-      //       description: {
-      //         [Op.substring]: keyword,
-      //       },
-      //     },
-      //   ],
-      //   year: {
-      //     [Op.gte]: year,
-      //   },
-      // },
-
+      
+      where: {
+        ...(checkQuery(isAll) &&
+          isAll !== 1 && {
+            userId: req.id,
+          }),
+        ...(checkQuery(keyword) && {
+          [Op.or]: [
+            {
+              title: {
+                [Op.substring]: keyword,
+              },
+            },
+            {
+              description: {
+                [Op.substring]: keyword,
+              },
+            },
+          ],
+        }),
+        ...(checkQuery(year) && {
+          year: {
+            [Op.gte]: year,
+          },
+        }),
+      },
       order: [[sortBuy, orderBuy]],
-
       limit: pageSize,
       offset: offset,
     });

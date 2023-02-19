@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 const UserModel = require("../models").user;
 
 async function getListUser(req, res) {
@@ -181,6 +183,61 @@ async function deleteUser(req,res) {
   }
 }
 
+// const index = async (req, res) => {
+//  try {
+//   let {keyword, page, pageSize, orderBy, sortBy, pageActive} = req.query;
+
+//   const users = await UserModel.findAndCountAll({
+//     attributes: ["id" ["name", "nama"], "email", "status", "jenisKelamin"],
+
+//     where {
+//       ...(keyword !== undefined && {
+//         [Op.or] : [
+//           {
+//             name: {
+//               [Op.like]: `%[keyword]%`,
+//             },
+//           },
+//           {
+//             email: {
+//               [Op.like]: `%[keyword]%`,
+//             },
+//           },
+//           {
+//             jenisKelamin: {
+//               [Op.like]: `%[keyword]%`,
+//             },
+//           },
+//         ]
+//       })
+//     },
+//     order: [[sortBy, orderBy]],
+//     offset: page,
+//     limit: pageSize,
+//   });
+//   console.log("page", page);
+//   console.log("pageSize", pageSize);
+//   return res.json({
+//     status: "Success",
+//     msg: "daftar user di temukan",
+//     data: users,
+//     pagination: {
+//       page: pageActive,
+//       nextPage: page +1,
+//       previousPage: pageActive +1,
+//       pageSize: pageSize,
+//       jumlah: users.row.length,
+//       total : users.count,
+//     }
+//   });
+//  } catch (err) {
+//   console.log(err),
+//   return res.status(403).json({
+//     status: 
+//   })
+//  } 
+// }
+
 module.exports = {
   deleteUser,
   getListUser,
@@ -189,3 +246,4 @@ module.exports = {
   getDetailUserByParams,
   updateUser,
 };
+
