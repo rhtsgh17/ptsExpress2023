@@ -1,0 +1,12 @@
+const express = require("express");
+const app = express();
+const routers = require("./src/routers/rotuers.js");
+const log = require("./src/middleware/log.js");
+const port = 8081;
+
+app.use(log);
+app.use(routers)
+
+app.listen(port, () =>
+  console.log(`Server berjalan di http://localhost:${port}`)
+);
