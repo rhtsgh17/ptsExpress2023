@@ -16,6 +16,7 @@ async function getListUser(req, res) {
       msg: "Ada Kesalahan",
       err: err,
     });
+    
   }
 }
 
