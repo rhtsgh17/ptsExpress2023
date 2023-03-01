@@ -2,7 +2,8 @@ const express = require("express");
 const app = express();
 const routers = require("./src/routers/rotuers.js");
 const log = require("./src/middleware/log.js");
-const port = 8081;
+require("dotenv").config;
+const port = process.env.PORT || 8081;
 
 app.use(log);
 app.use(routers)
