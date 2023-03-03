@@ -1,5 +1,5 @@
 const UserModel = require("../models").user;
-// const ForgotPasswordModel = require("../models").password;
+const ForgotPasswordModel = require("../models").password;
 // const resetPasswordDgnEmailModel = require("../models").resetPasswordDgnEmail;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -10,31 +10,27 @@ require("dotenv").config;
 
 async function register(req, res) {
   try {
-    let { nama, email, password, role } = req.body;
-
-    let hashPassword = await bcrypt.hashSync(password, 10);
-
-    await UserModel.create({
-      nama: nama,
-      email: email,
-      password: hashPassword,
-      role: role,
-    });
-    console.log(nama);
-    //   console.log(email);
-    //   console.log(password);
-    //   console.log(role);
-
+    let payload = req.body;
+    let { nama, email, password } = req.body;
+        let hashPassword = await bcrypt.hashSync(password, 10);
+    console.log(password);
+        await UserModel.create({
+          nama: nama,
+          email: email,
+          password: hashPassword,
+        });
+    console.log("Payload", nama, email, password);
     res.json({
       status: "Success",
       msg: "Register Berhasil",
+      // payload: [nama, email, password],
     });
   } catch (err) {
     console.log(err);
     res.status(403).json({
-      status: "fail",
+      status: "Fail",
       msg: "Ada Kesalahan",
-      err: err,
+      // n: ` nama ${nama}`
     });
   }
 }
@@ -53,14 +49,14 @@ async function login(req, res) {
     if (user === null) {
       return res.status(422).json({
         status: "Fail",
-        msg: "Email tidak ditemukan, Silahkan register",
+        msg: "Email Tidak ditemukan, Silahkan Register",
       });
     }
 
     if (password === null) {
       return res.status(422).json({
         status: "Fail",
-        msg: "Email dan password tidak ditemukan",
+        msg: "Email dan Password Tidak Cocok",
       });
     }
 
@@ -69,7 +65,7 @@ async function login(req, res) {
     if (verify === false) {
       return res.status(422).json({
         status: "Fail",
-        msg: "Email dan passwor tidak ditemukan",
+        msg: "Email dan Password Tidak Cocok",
       });
     }
 
@@ -79,9 +75,7 @@ async function login(req, res) {
         email: user?.email,
         nama: user?.nama,
       },
-
       process.env.JWT_SECRET,
-
       {
         expiresIn: "7d",
       }
@@ -91,13 +85,12 @@ async function login(req, res) {
       status: "Success",
       msg: "Login Berhasil",
       token: token,
-      data: user,
+      user: user,
     });
   } catch (err) {
     res.status(403).json({
-      status: "fail",
+      status: "Fail",
       msg: "Ada Kesalahan",
-      err: err,
     });
   }
 }
